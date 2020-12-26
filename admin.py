@@ -17,13 +17,15 @@ def dep_install(password):
         dep_install = run(
             [ 'xargs', '-a', './packages/basic.txt',
             'sudo', '-S', 'apt-get', 'install', '-y' ],
-            capture_output=True,
+            stdout=PIPE,
+            stderr=STDOUT,
             text=True,
             input=password,
             check=True
         )
     except CalledProcessError as error:
         click.echo(error)
+        click.echo(error.stdout)
     if dep_install is not None:
         click.echo(dep_install.stdout)
         click.echo('Success.')
@@ -40,13 +42,15 @@ def python_init(password):
         upgrade_pip = run(
             [ 'sudo', '-S', 'python3', '-m',
             'pip', 'install', '--upgrade', 'pip' ],
-            capture_output=True,
+            stdout=PIPE,
+            stderr=STDOUT,
             text=True,
             input=password,
             check=True
         )
     except CalledProcessError as error:
         click.echo(error)
+        click.echo(error.stdout)
     if upgrade_pip is not None:
         click.echo(upgrade_pip.stdout)
         click.echo('Success.')
@@ -56,13 +60,15 @@ def python_init(password):
         click.echo('Installing virtualenv')
         install_virtualenv = run(
             ['sudo', '-S', 'pip', 'install', 'virtualenv'],
-            capture_output=True,
+            stdout=PIPE,
+            stderr=STDOUT,
             text=True,
             input=password,
             check=True
         )
     except CalledProcessError as error:
         click.echo(error)
+        click.echo(error.stdout)
     if install_virtualenv is not None:
         click.echo(install_virtualenv.stdout)
         click.echo('Success.')
@@ -79,13 +85,15 @@ def db_create(password, project_name):
         click.echo('Creating database ' + project_name + '.')
         create_db = run(
             ['sudo', '-u', 'postgres', '-S', 'createdb', project_name],
-            capture_output=True,
+            stdout=PIPE,
+            stderr=STDOUT,
             text=True,
             input=password,
             check=True
         )
     except CalledProcessError as error:
         click.echo(error)
+        click.echo(error.stdout)
     if create_db is not None:
         click.echo(create_db.stdout)
         click.echo('Success.')
@@ -111,7 +119,6 @@ def db_drop(password, project_name):
         )
     except CalledProcessError as error:
         click.echo(error)
-        click.echo(error.output)
         click.echo(error.stdout)
     if drop_db is not None:
         click.echo(drop_db.stdout)
