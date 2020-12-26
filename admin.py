@@ -78,7 +78,7 @@ def db_create(password, project_name):
     try:
         click.echo('Creating database ' + project_name + '.')
         create_db = run(
-            ['sudo' '-u' 'postgres' '-S' 'createdb', project_name],
+            ['sudo', '-u', 'postgres', '-S', 'createdb', project_name],
             capture_output=True,
             text=True,
             input=password,
@@ -102,7 +102,7 @@ def db_drop(password, project_name):
     try:
         click.echo('Dropping database ' + project_name + '.')
         create_db = run(
-            ['sudo' '-u' 'postgres' '-S' 'dropdb', project_name],
+            ['sudo', '-u', 'postgres', '-S', 'dropdb', project_name],
             capture_output=True,
             text=True,
             input=password,
