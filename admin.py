@@ -101,7 +101,7 @@ def db_drop(password, project_name):
     drop_db = None
     try:
         click.echo('Dropping database ' + project_name + '.')
-        create_db = run(
+        drop_db = run(
             ['sudo', '-u', 'postgres', '-S', 'dropdb', project_name],
             capture_output=True,
             text=True,
