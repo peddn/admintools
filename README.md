@@ -23,3 +23,15 @@ installationsanleitungen
 
 How to install multiple packages via textfile:
 xargs -a ./install.txt sudo apt-get install -y
+
+
+
+INSTALLATION
+============
+
+You need a user allowed to execute sudo commands.
+
+~$ git clone https://github.com/peddn/admintools.git
+~$ cd admintools
+~$ sudo pip install -r requirements.txt
+~$ python3 admin.py
