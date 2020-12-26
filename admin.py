@@ -110,7 +110,6 @@ def db_drop(password, project_name):
         )
     except CalledProcessError as error:
         click.echo(error)
-        click.echo(db_drop.stderr)
     if drop_db is not None:
         click.echo(drop_db.stdout)
         click.echo('Success.')
