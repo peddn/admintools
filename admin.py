@@ -1,4 +1,4 @@
-from subprocess import run, CalledProcessError
+from subprocess import run, CalledProcessError, PIPE, STDOUT
 import click
 
 @click.group()
@@ -103,7 +103,8 @@ def db_drop(password, project_name):
         click.echo('Dropping database ' + project_name + '.')
         drop_db = run(
             ['sudo', '-u', 'postgres', '-S', 'dropdb', project_name],
-            capture_output=True,
+            stdout=PIPE,
+            stderr=STDOUT,
             text=True,
             input=password,
             check=True
@@ -112,6 +113,7 @@ def db_drop(password, project_name):
         click.echo(error)
         click.echo(error.output)
         click.echo(error.stdout)
+        error.
     if drop_db is not None:
         click.echo(drop_db.stdout)
         click.echo('Success.')
