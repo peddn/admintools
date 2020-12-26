@@ -77,14 +77,20 @@ def python_init(password):
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
             confirmation_prompt=False, required=True)
+@click.option('--db-password', prompt=True, hide_input=True,
+            confirmation_prompt=True, required=True)
 @click.argument('project-name')
-def db_create(password, project_name):
+def db_create(password, dp_password, project_name):
     """Creates a database and a user for this database."""
+
+    db_name = project_name + '-db'
+    db_username = project_name + '-user'
     create_db = None
+
     try:
-        click.echo('Creating database ' + project_name + '.')
+        click.echo('Creating database ' + db_name + '.')
         create_db = run(
-            ['sudo', '-u', 'postgres', '-S', 'createdb', project_name],
+            ['sudo', '-u', 'postgres', '-S', 'createdb', db_name],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
@@ -95,8 +101,29 @@ def db_create(password, project_name):
         click.echo(error)
         click.echo(error.stdout)
     if create_db is not None:
-        click.echo(create_db.stdout)
+        # there is no output by this command
+        # click.echo(create_db.stdout)
         click.echo('Success.')
+
+    create_user = None
+    try:
+        click.echo('Creating user ' + db_username)
+        create_user = run(
+            ['sudo', '-u', 'postgres', '-S', 'createuser', db_username],
+            stdout=PIPE,
+            stderr=STDOUT,
+            text=True,
+            input=password,
+            check=True
+        )
+    except CalledProcessError as error:
+        click.echo(error)
+        click.echo(error.stdout)
+    if create_user is not None:
+        # there is no output by this command
+        # click.echo(create_db.stdout)
+        click.echo('Success.')
+
 
 
 
@@ -106,11 +133,15 @@ def db_create(password, project_name):
 @click.argument('project-name')
 def db_drop(password, project_name):
     """Drops a database and its corresponding user."""
+    
+    db_name = project_name + '-db'
+    db_username = project_name + '-user'
     drop_db = None
+
     try:
-        click.echo('Dropping database ' + project_name + '.')
+        click.echo('Dropping database ' + db_name + '.')
         drop_db = run(
-            ['sudo', '-u', 'postgres', '-S', 'dropdb', project_name],
+            ['sudo', '-u', 'postgres', '-S', 'dropdb', db_name],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
@@ -121,7 +152,27 @@ def db_drop(password, project_name):
         click.echo(error)
         click.echo(error.stdout)
     if drop_db is not None:
-        click.echo(drop_db.stdout)
+        # there is no output by this command
+        # click.echo(drop_db.stdout)
+        click.echo('Success.')
+
+    drop_user = None
+    try:
+        click.echo('Dropping user ' + db_username)
+        drop_user = run(
+            ['sudo', '-u', 'postgres', '-S', 'dropuser', db_username],
+            stdout=PIPE,
+            stderr=STDOUT,
+            text=True,
+            input=password,
+            check=True
+        )
+    except CalledProcessError as error:
+        click.echo(error)
+        click.echo(error.stdout)
+    if drop_user is not None:
+        # there is no output by this command
+        # click.echo(create_db.stdout)
         click.echo('Success.')
 
 cli.add_command(dep_install)

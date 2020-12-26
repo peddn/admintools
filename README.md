@@ -30,8 +30,9 @@ INSTALLATION
 ============
 
 You need a user allowed to execute sudo commands.
+This software is designed to live in the system's python environment.
 
 ~$ git clone https://github.com/peddn/admintools.git
 ~$ cd admintools
 ~$ sudo pip install -r requirements.txt
-~$ python3 admin.py
+~$ python3 admin.py --help
