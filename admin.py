@@ -8,16 +8,19 @@ import click
 def admin(password):
     """Doc String"""
 
-    apt_get_update = None
+    install_basic = None
 
     try:
-        apt_get_update = run(['sudo', '-S', 'apt-get', 'update'], capture_output=True, text=True, input=password, check=True)
+        click.echo('Instaling basic dependencies.')
+        install_basic = run(['xargs', '-a', './packages/install.txt', 'sudo', '-S', 'apt-get', 'install', '-y'], capture_output=True, text=True, input=password, check=True)
     except CalledProcessError as error:
         click.echo(error)
 
-    if apt_get_update is not None:
-        click.echo(apt_get_update.stdout)
+    if install_basic is not None:
+        click.echo(install_basic.stdout)
+        click.echo('Success.')
 
 
 if __name__ == '__main__':
     admin()
+
