@@ -7,40 +7,117 @@ def cli():
 
 
 @click.command()
-@click.option('-p', '--password', prompt=True, hide_input=True,
+@click.option('--password', prompt=True, hide_input=True,
               confirmation_prompt=False, required=True)
-def firsttime_basic_dependencies(password):
-    """INSTALL BASIC DEPENDENCIES"""
-    install_basic = None
+def dep_install(password):
+    """Installs basic dependencies."""
+    dep_install = None
     try:
         click.echo('Installing basic dependencies.')
-        install_basic = run(['xargs', '-a', './packages/basic.txt', 'sudo', '-S', 'apt-get', 'install', '-y'], capture_output=True, text=True, input=password, check=True)
+        dep_install = run(
+            [ 'xargs', '-a', './packages/basic.txt',
+            'sudo', '-S', 'apt-get', 'install', '-y' ],
+            capture_output=True,
+            text=True,
+            input=password,
+            check=True
+        )
     except CalledProcessError as error:
         click.echo(error)
-    if install_basic is not None:
-        click.echo(install_basic.stdout)
+    if dep_install is not None:
+        click.echo(dep_install.stdout)
         click.echo('Success.')
 
 
 @click.command()
-@click.option('-p', '--password', prompt=True, hide_input=True,
+@click.option('--password', prompt=True, hide_input=True,
               confirmation_prompt=False, required=True)
-def firsttime_basic_python(password):
-    """UPGRADE PIP AND INSTALL VIRTUALENV"""
+def python_init(password):
+    """Upgrade pip and install virtualenv."""
     upgrade_pip = None
     try:
         click.echo('Upgrading pip.')
-        upgrade_pip = run(['sudo', '-S', 'python3', '-m', 'pip', 'install', '--upgrade', 'pip'], capture_output=True, text=True, input=password, check=True)
+        upgrade_pip = run(
+            [ 'sudo', '-S', 'python3', '-m',
+            'pip', 'install', '--upgrade', 'pip' ],
+            capture_output=True,
+            text=True,
+            input=password,
+            check=True
+        )
     except CalledProcessError as error:
         click.echo(error)
     if upgrade_pip is not None:
         click.echo(upgrade_pip.stdout)
         click.echo('Success.')
+    
+    install_virtualenv = None
+    try:
+        click.echo('Installing virtualenv')
+        install_virtualenv = run(
+            ['sudo', '-S', 'pip', 'install', 'virtualenv'],
+            capture_output=True,
+            text=True,
+            input=password,
+            check=True
+        )
+    except CalledProcessError as error:
+        click.echo(error)
+    if install_virtualenv is not None:
+        click.echo(install_virtualenv.stdout)
+        click.echo('Success.')
 
 
-cli.add_command(firsttime_basic_dependencies)
-cli.add_command(firsttime_basic_python)
+@click.command()
+@click.option('--password', prompt=True, hide_input=True,
+            confirmation_prompt=False, required=True)
+@click.argument('project-name')
+def db_create(password, project_name):
+    """Creates a database and a user for this database."""
+    create_db = None
+    try:
+        click.echo('Creating database ' + project_name + '.')
+        create_db = run(
+            ['sudo' '-u' 'postgres' '-S' 'createdb', project_name],
+            capture_output=True,
+            text=True,
+            input=password,
+            check=True
+        )
+    except CalledProcessError as error:
+        click.echo(error)
+    if create_db is not None:
+        click.echo(create_db.stdout)
+        click.echo('Success.')
+
+
+
+@click.command()
+@click.option('--password', prompt=True, hide_input=True,
+            confirmation_prompt=False, required=True)
+@click.argument('project-name')
+def db_drop(password, project_name):
+    """Drops a database and its corresponding user."""
+    drop_db = None
+    try:
+        click.echo('Dropping database ' + project_name + '.')
+        create_db = run(
+            ['sudo' '-u' 'postgres' '-S' 'dropdb', project_name],
+            capture_output=True,
+            text=True,
+            input=password,
+            check=True
+        )
+    except CalledProcessError as error:
+        click.echo(error)
+    if drop_db is not None:
+        click.echo(drop_db.stdout)
+        click.echo('Success.')
+
+cli.add_command(dep_install)
+cli.add_command(python_init)
+cli.add_command(db_create)
+cli.add_command(db_drop)
 
 if __name__ == '__main__':
     cli()
-
