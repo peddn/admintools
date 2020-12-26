@@ -80,7 +80,7 @@ def python_init(password):
 @click.option('--db-password', prompt=True, hide_input=True,
             confirmation_prompt=True, required=True)
 @click.argument('project-name')
-def db_create(password, dp_password, project_name):
+def db_create(password, db_password, project_name):
     """Creates a database and a user for this database."""
 
     db_name = project_name + '-db'
@@ -133,7 +133,7 @@ def db_create(password, dp_password, project_name):
 @click.option('--db-password', prompt=True, hide_input=True,
             confirmation_prompt=True, required=True)
 @click.argument('project-name')
-def db_drop(password, project_name):
+def db_drop(password, db_password, project_name):
     """Drops a database and its corresponding user."""
     
     db_name = project_name + '-db'
