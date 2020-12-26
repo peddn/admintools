@@ -113,7 +113,6 @@ def db_drop(password, project_name):
         click.echo(error)
         click.echo(error.output)
         click.echo(error.stdout)
-        error.
     if drop_db is not None:
         click.echo(drop_db.stdout)
         click.echo('Success.')
