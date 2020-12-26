@@ -130,6 +130,8 @@ def db_create(password, dp_password, project_name):
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
             confirmation_prompt=False, required=True)
+@click.option('--db-password', prompt=True, hide_input=True,
+            confirmation_prompt=True, required=True)
 @click.argument('project-name')
 def db_drop(password, project_name):
     """Drops a database and its corresponding user."""
