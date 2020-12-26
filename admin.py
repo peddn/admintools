@@ -13,7 +13,7 @@ def admin(password):
 
     try:
         click.echo('Installing basic dependencies.')
-        install_basic = run(['xargs', '-a', './packages/install.txt', 'sudo', '-S', 'apt-get', 'install', '-y'], capture_output=True, text=True, input=password, check=True)
+        install_basic = run(['xargs', '-a', './packages/basic.txt', 'sudo', '-S', 'apt-get', 'install', '-y'], capture_output=True, text=True, input=password, check=True)
     except CalledProcessError as error:
         click.echo(error)
 
