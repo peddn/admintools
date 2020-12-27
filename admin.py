@@ -1,6 +1,19 @@
 from subprocess import run, CalledProcessError, PIPE, STDOUT
 from string import Template
 import click
+import json
+
+
+
+
+config = None
+
+def read_config():
+    click.echo('Loading config file.')
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+    click.echo('Success.')
+
 
 @click.group()
 def cli():
@@ -179,6 +192,7 @@ def db_drop(password, db_password, project_name):
         click.echo('Success.')
 
 
+# TODO validate project-name user input
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
               confirmation_prompt=False, required=True)
@@ -201,4 +215,5 @@ cli.add_command(db_drop)
 cli.add_command(gen_systemd)
 
 if __name__ == '__main__':
+    read_config()
     cli()
