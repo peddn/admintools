@@ -208,7 +208,7 @@ def gen_systemd(ctx, password, project, site):
         template_filled = template.substitute(
             project_name = project,
             site_name = site,
-            projects_home = config['projectHome'],
+            projects_home = config['projectsHome'],
             user = config['user'],
             virtual_environment = config['virtualEnvironment']
         )
