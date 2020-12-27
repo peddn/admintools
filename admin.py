@@ -196,21 +196,23 @@ def db_drop(ctx, password, db_password, project_name):
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
-@click.argument('project-name')
+@click.option('--project', prompt=True, required=True)
+@click.option('--site', prompt=True, required=True)
 @click.pass_context
-def gen_systemd(ctx, password, project_name):
+def gen_systemd(ctx, password, project, site):
     """Generates systemd socket and service files."""
-    
+    config = ctx.obj['CONFIG']
     with open('./templates/socket_template.socket', 'r') as file:
         template_str = file.read()
         template = Template(template_str)
-        template_filled = template.substitute(project=project_name)
+        template_filled = template.substitute(
+            project_name = project,
+            site_name = site,
+            projects_home = config['projectHome'],
+            user = config['user'],
+            virtual_environment = config['virtualEnvironment']
+        )
         click.echo(template_filled)
-
-        config = ctx.obj['CONFIG']
-
-        click.echo('${user} = "' + config['user'] + '"')
-
 
 
 cli.add_command(dep_install)

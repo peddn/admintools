@@ -1,3 +1,7 @@
 {
-    "user": "peddn"
+    "user": "peddn",
+    "projectsHome": "/home/peddn/projects",
+    "project": "fury161",
+    "site": "fury161",
+    "virtualEnvironment": "venv"
 }
