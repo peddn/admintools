@@ -206,6 +206,8 @@ def gen_systemd(password, project_name):
         template_filled = template.substitute(project=project_name)
         click.echo(template_filled)
 
+        click.echo('${user} = "' + config.user + '"')
+
 
 
 cli.add_command(dep_install)
