@@ -5,25 +5,22 @@ import json
 
 
 
-
-config = None
-
-def read_config():
+@click.group()
+@click.pass_context
+def cli(ctx):
     click.echo('Loading config file.')
     with open('config.json', 'r') as f:
         config = json.load(f)
+        ctx.ensure_object(dict)
+        ctx.obj['CONFIG'] = config
     click.echo('Success.')
-
-
-@click.group()
-def cli():
-    read_config()
 
 
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
-              confirmation_prompt=False, required=True)
-def dep_install(password):
+                confirmation_prompt=False, required=True)
+@click.pass_context
+def dep_install(ctx, password):
     """Installs basic dependencies."""
     dep_install = None
     try:
@@ -47,8 +44,9 @@ def dep_install(password):
 
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
-              confirmation_prompt=False, required=True)
-def python_init(password):
+                confirmation_prompt=False, required=True)
+@click.pass_context
+def python_init(ctx, password):
     """Upgrade pip and install virtualenv."""
     upgrade_pip = None
     try:
@@ -90,11 +88,12 @@ def python_init(password):
 
 @click.command()
 @click.option('--password', prompt='account password', hide_input=True,
-            confirmation_prompt=False, required=True)
+                confirmation_prompt=False, required=True)
 @click.option('--db-password', prompt='database password', hide_input=True,
-            confirmation_prompt=True, required=True)
+                confirmation_prompt=True, required=True)
 @click.argument('project-name')
-def db_create(password, db_password, project_name):
+@click.pass_context
+def db_create(ctx, password, db_password, project_name):
     """Creates a database and a user for this database."""
 
     db_name = project_name + '-db'
@@ -143,11 +142,12 @@ def db_create(password, db_password, project_name):
 
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
-            confirmation_prompt=False, required=True)
+                confirmation_prompt=False, required=True)
 @click.option('--db-password', prompt=True, hide_input=True,
-            confirmation_prompt=True, required=True)
+                confirmation_prompt=True, required=True)
 @click.argument('project-name')
-def db_drop(password, db_password, project_name):
+@click.pass_context
+def db_drop(ctx, password, db_password, project_name):
     """Drops a database and its corresponding user."""
     
     db_name = project_name + '-db'
@@ -195,9 +195,10 @@ def db_drop(password, db_password, project_name):
 # TODO validate project-name user input
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
-              confirmation_prompt=False, required=True)
+                confirmation_prompt=False, required=True)
 @click.argument('project-name')
-def gen_systemd(password, project_name):
+@click.pass_context
+def gen_systemd(ctx, password, project_name):
     """Generates systemd socket and service files."""
     
     with open('./templates/socket_template.socket', 'r') as file:
@@ -205,6 +206,8 @@ def gen_systemd(password, project_name):
         template = Template(template_str)
         template_filled = template.substitute(project=project_name)
         click.echo(template_filled)
+
+        config = ctx.obj['CONFIG']
 
         click.echo('${user} = "' + config.user + '"')
 
