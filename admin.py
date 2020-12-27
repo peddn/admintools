@@ -202,6 +202,13 @@ def db_drop(ctx, password, db_password, project_name):
 def gen_systemd(ctx, password, project, site):
     """Generates systemd socket and service files."""
     config = ctx.obj['CONFIG']
+    with open('./templates/socket_template.socket', 'r') as file:
+        template_str = file.read()
+        template = Template(template_str)
+        template_filled = template.substitute(
+            project_name = project,
+        )
+        click.echo(template_filled)
     with open('./templates/service_template.service', 'r') as file:
         template_str = file.read()
         template = Template(template_str)

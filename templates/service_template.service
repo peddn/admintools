@@ -7,7 +7,7 @@ After=network.target
 User=${user}
 Group=www-data
 WorkingDirectory=${projects_home}/${project_name}/${site_name}
-ExecStart=${projects_home}/${project_name}/${site_name}/${virtual_environment}/bin/gunicorn \
+ExecStart=${projects_home}/${project_name}/${virtual_environment}/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
           --bind unix:/run/gunicorn_${project_name}.sock \
