@@ -17,7 +17,7 @@ def read_config():
 
 @click.group()
 def cli():
-    pass
+    read_config()
 
 
 @click.command()
@@ -217,5 +217,4 @@ cli.add_command(db_drop)
 cli.add_command(gen_systemd)
 
 if __name__ == '__main__':
-    read_config()
     cli()
