@@ -1,4 +1,5 @@
 from subprocess import run, CalledProcessError, PIPE, STDOUT
+from string import Template
 import click
 
 @click.group()
@@ -75,9 +76,9 @@ def python_init(password):
 
 
 @click.command()
-@click.option('--password', prompt=True, hide_input=True,
+@click.option('--password', prompt='account password', hide_input=True,
             confirmation_prompt=False, required=True)
-@click.option('--db-password', prompt=True, hide_input=True,
+@click.option('--db-password', prompt='database password', hide_input=True,
             confirmation_prompt=True, required=True)
 @click.argument('project-name')
 def db_create(password, db_password, project_name):
@@ -177,10 +178,27 @@ def db_drop(password, db_password, project_name):
         # click.echo(create_db.stdout)
         click.echo('Success.')
 
+
+@click.command()
+@click.option('--password', prompt=True, hide_input=True,
+              confirmation_prompt=False, required=True)
+@click.argument('project-name')
+def gen_systemd(password, project_name):
+    """Generates systemd socket and service files."""
+    
+    with open('./templates/socket_template.socket', 'r') as file:
+        template_str = file.read()
+        template = Template(template_str)
+        template_filled = template.substitute(project='fury161')
+        click.echo(template_filled)
+
+
+
 cli.add_command(dep_install)
 cli.add_command(python_init)
 cli.add_command(db_create)
 cli.add_command(db_drop)
+cli.add_command(gen_systemd)
 
 if __name__ == '__main__':
     cli()
