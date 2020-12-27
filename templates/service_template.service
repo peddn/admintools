@@ -1,13 +1,13 @@
 [Unit]
-Description=gunicorn daemon for project ${project}
-Requires=gunicorn_${project}.socket
+Description=gunicorn daemon for project ${project_name}
+Requires=gunicorn_${project_name}.socket
 After=network.target
 
 [Service]
 User=${user}
 Group=www-data
-WorkingDirectory=${site}
-ExecStart=${projects_home}/${project}/${virtual_environment}/bin/gunicorn \
+WorkingDirectory=${projects_home}/${project_name}/${site_name}
+ExecStart=${projects_home}/${project_name}/${site_name}/${virtual_environment}/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
           --bind unix:/run/gunicorn_${project}.sock \
