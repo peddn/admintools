@@ -209,7 +209,7 @@ def gen_systemd(ctx, password, project_name):
 
         config = ctx.obj['CONFIG']
 
-        click.echo('${user} = "' + config.user + '"')
+        click.echo('${user} = "' + config['user'] + '"')
 
 
 
