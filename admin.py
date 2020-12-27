@@ -189,7 +189,7 @@ def gen_systemd(password, project_name):
     with open('./templates/socket_template.socket', 'r') as file:
         template_str = file.read()
         template = Template(template_str)
-        template_filled = template.substitute(project='fury161')
+        template_filled = template.substitute(project=project_name)
         click.echo(template_filled)
 
 
