@@ -206,10 +206,10 @@ def db_drop(ctx, password, db_password, project_name):
 
 
 def validate_project(ctx, param, project):
-    if project not in ctx:
-        raise click.BadParameter('Project "' + project + '" not loaded. Probably there is no json file present.')
-    else:
+    if project in ctx:
         return project
+    else:
+        raise click.BadParameter('Project "' + project + '" not loaded. Probably there is no json file present.')
 
 
 # TODO validate project-name user input
