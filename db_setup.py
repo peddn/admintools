@@ -10,7 +10,7 @@ cur = conn.cursor()
 
 result  = cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
 
-print('RESULT: ' + result)
+print('RESULT: ' + str(result))
 
 cur.close()
 conn.close()
