@@ -161,13 +161,24 @@ def db_create(ctx, sudo_password, db_password, project):
         click.echo('Success.')
     
     if create_db is not None and create_user is not None:
-        conn = psycopg2.connect('dbname=postgres user=postgres host=localhost')
-        cur = conn.cursor()
-
-        cur.execute('ALTER ROLE ' + project + ' SET client_encoding TO ' + "'utf8'" + ';')
-
-        cur.close()
-        conn.close()
+        postgres = None
+        try:
+            click.echo('Executing postgres script')
+            postgres = run(
+                ['sudo', '-u', 'postgres', '-S', 'python3', 'db_setup.py'],
+                stdout=PIPE,
+                stderr=STDOUT,
+                text=True,
+                input=sudo_password,
+                check=True
+            )
+        except CalledProcessError as error:
+            click.echo(error)
+            click.echo(error.stdout)
+        if postgres is not None:
+            # there is no output by this command
+            click.echo(postgres.stdout)
+            click.echo('Success.')
     
 
 
