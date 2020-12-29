@@ -22,7 +22,7 @@ def cli(ctx):
             if project_file.is_file():
                 if project_file.name.endswith('.json') and not project_file.name.startswith('.'):
                     click.echo('Loading project file ' + project_file.name)
-                    with open(project_file.name, 'r') as file:
+                    with open('./projects/' + project_file.name, 'r') as file:
                         project_json = json.load(file)
                         file_name = os.path.splitext(project_file.name)[0]
                         ctx.obj[file_name] = project_json
