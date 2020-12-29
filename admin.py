@@ -205,31 +205,34 @@ def db_drop(ctx, password, db_password, project_name):
         click.echo('Success.')
 
 
+def validate_project(ctx, param, project):
+    if project not in ctx:
+        raise click.BadParameter('Project "' + project + '" not loaded. Probably there is no json file present.')
+    else:
+        return project
+
+
 # TODO validate project-name user input
 @click.command()
 @click.option('--sudo-password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
-@click.argument('project', nargs=1)
+@click.argument('project', nargs=1, callback=validate_project, required=True)
 @click.pass_context
 def systemd_create(ctx, sudo_password, project):
     """Generates systemd socket and service files."""
     
 
-    raise click.ClickException("Something went wrong.")
-    raise click.Abort()
 
     # get the configuration
     global_config = ctx.obj['CONFIG']
     project_config = ctx.obj[project]
-
-    
 
 
     with open('./templates/socket_template.socket', 'r') as file:
         template_str = file.read()
         template = Template(template_str)
         template_filled = template.substitute(
-            project_name = project,
+            project_wagtail = project_config['wagtailProject'],
         )
         click.echo(template_filled)
         # TODO write out to 
@@ -237,11 +240,11 @@ def systemd_create(ctx, sudo_password, project):
         template_str = file.read()
         template = Template(template_str)
         template_filled = template.substitute(
-            project_name = project,
-            site_name = site,
-            projects_home = config['projectsHome'],
-            user = config['user'],
-            virtual_environment = config['virtualEnvironment']
+            user = global_config['user'],
+            virtual_environment = global_config['virtualEnvironment'],
+            projects_root = global_config['projectsRoot'],
+            project_meta = project,
+            project_wagtail = project_config['wagtailProject'],
         )
         click.echo(template_filled)
 
