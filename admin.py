@@ -1,8 +1,11 @@
 import os
-import click
 import json
 from subprocess import run, CalledProcessError, PIPE, STDOUT
 from string import Template
+
+import click
+import psycopg2
+
 
 @click.group()
 @click.pass_context
@@ -158,28 +161,14 @@ def db_create(ctx, sudo_password, db_password, project):
         click.echo('Success.')
     
     if create_db is not None and create_user is not None:
+        conn = psycopg2.connect('dbname=postgres user=postgres')
+        cur = conn.cursor()
 
-        alter_role_encoding = None
-        try:
-            click.echo('ALTER ROLE on user: ' + project)
-            command = '--command="ALTER ROLE ' + project + ' SET client_encoding TO ' + "'utf8'" + ';"'
-            psql = ["sudo", "-u", "postgres", "-S", "psql", command, "postgres"]
-            alter_role_encoding = run(
-                psql,
-                stdout=PIPE,
-                stderr=STDOUT,
-                text=True,
-                input=sudo_password,
-                check=True
-            )
-        except CalledProcessError as error:
-            click.echo(error)
-            click.echo(error.stdout)
-        if alter_role_encoding is not None:
-            # there is no output by this command
-            # click.echo(create_db.stdout)
-            click.echo('Success.')
+        cur.execute('ALTER ROLE ' + project + ' SET client_encoding TO ' + "'utf8'" + ';')
 
+        cur.close()
+        conn.close()
+    
 
 
 @click.command()
