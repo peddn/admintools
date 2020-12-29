@@ -177,7 +177,7 @@ def db_create(ctx, sudo_password, db_password, project):
             click.echo(error.stdout)
         if postgres is not None:
             # there is no output by this command
-            click.echo('stdout: ' + postgres.stdout)
+            click.echo('stdout: ' + str(postgres.stdout))
             click.echo('Success.')
     
 
