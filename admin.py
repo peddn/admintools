@@ -1,19 +1,34 @@
-from subprocess import run, CalledProcessError, PIPE, STDOUT
-from string import Template
+import os
 import click
 import json
-
-
+from subprocess import run, CalledProcessError, PIPE, STDOUT
+from string import Template
 
 @click.group()
 @click.pass_context
 def cli(ctx):
+    ctx.ensure_object(dict)
+
+    # load the global configuration data and add it to the context
     click.echo('Loading config file.')
-    with open('config.json', 'r') as f:
-        config = json.load(f)
-        ctx.ensure_object(dict)
-        ctx.obj['CONFIG'] = config
+    with open('config.json', 'r') as c_file:
+        config_json = json.load(c_file)
+        ctx.obj['CONFIG'] = config_json
     click.echo('Success.')
+
+    # load all project meta data and add them to the context
+    with os.scandir('./projects') as projects_dir:
+        for project_file in projects_dir:
+            if project_file.is_file():
+                if project_file.endswith('.json') and not project_file.name.startswith('.'):
+                    click.echo('Loading project file ' + project_file.name)
+                    with open(project_file.name, 'r') as file:
+                        project_json = json.load(file)
+                        file_name = os.path.splitext(project_file.name)[0]
+                        ctx.obj[file_name] = project_json
+                        click.echo(project_json)
+                    click.echo('Success.')
+
 
 
 @click.command()
@@ -194,14 +209,16 @@ def db_drop(ctx, password, db_password, project_name):
 
 # TODO validate project-name user input
 @click.command()
-@click.option('--password', prompt=True, hide_input=True,
+@click.option('--sudo-password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
-@click.option('--project', prompt=True, required=True)
-@click.option('--site', prompt=True, required=True)
+@click.argument('project', nargs=1)
 @click.pass_context
-def gen_systemd(ctx, password, project, site):
+def gen_systemd(ctx, sudo_password, project):
     """Generates systemd socket and service files."""
     config = ctx.obj['CONFIG']
+
+
+
     with open('./templates/socket_template.socket', 'r') as file:
         template_str = file.read()
         template = Template(template_str)
@@ -209,6 +226,7 @@ def gen_systemd(ctx, password, project, site):
             project_name = project,
         )
         click.echo(template_filled)
+        # TODO write out to 
     with open('./templates/service_template.service', 'r') as file:
         template_str = file.read()
         template = Template(template_str)

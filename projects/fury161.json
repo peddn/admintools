@@ -1,0 +1,8 @@
+{
+    "wagtailProject": "fury161",
+    "serverNames": [
+        "www.fury161.net",
+        "fury161.net"
+    ],
+    "repository": "https://github.com/peddn/fury161.git"
+}
