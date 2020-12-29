@@ -161,7 +161,7 @@ def db_create(ctx, sudo_password, db_password, project):
         click.echo('Success.')
     
     if create_db is not None and create_user is not None:
-        conn = psycopg2.connect('dbname=postgres user=postgres')
+        conn = psycopg2.connect('dbname=postgres user=postgres host=localhost')
         cur = conn.cursor()
 
         cur.execute('ALTER ROLE ' + project + ' SET client_encoding TO ' + "'utf8'" + ';')
