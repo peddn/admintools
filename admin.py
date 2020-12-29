@@ -162,8 +162,7 @@ def db_create(ctx, sudo_password, db_password, project):
         alter_role_encoding = None
         try:
             click.echo('ALTER ROLE on user: ' + project)
-            utf8 = "'utf8'"
-            psql = ['sudo', '-u', 'postgres', '-S', 'psql', '-tA', '--command="ALTER ROLE ' + project + ' SET client_encoding TO \'utf8\';"', 'postgres']
+            psql = 'sudo -u postgres -S psql --command="ALTER ROLE ' + project + ' SET client_encoding TO \'utf8\';" postgres'
             alter_role_encoding = run(
                 psql,
                 stdout=PIPE,
