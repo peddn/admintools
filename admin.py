@@ -28,17 +28,18 @@ def cli(ctx):
                         ctx.obj[filename_without_extension] = project_json
                     click.echo('Success.')
 
+# GLOBAL commands
 
 @click.command()
 @click.option('--password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
 @click.pass_context
-def dep_install(ctx, password):
+def aptget_firsttime(ctx, password):
     """Installs basic dependencies."""
-    dep_install = None
+    aptget_install = None
     try:
         click.echo('Installing basic dependencies.')
-        dep_install = run(
+        aptget_install = run(
             [ 'xargs', '-a', './packages/basic.txt',
             'sudo', '-S', 'apt-get', 'install', '-y' ],
             stdout=PIPE,
@@ -50,8 +51,8 @@ def dep_install(ctx, password):
     except CalledProcessError as error:
         click.echo(error)
         click.echo(error.stdout)
-    if dep_install is not None:
-        click.echo(dep_install.stdout)
+    if aptget_install is not None:
+        click.echo(aptget_install.stdout)
         click.echo('Success.')
 
 
@@ -59,7 +60,7 @@ def dep_install(ctx, password):
 @click.option('--password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
 @click.pass_context
-def python_init(ctx, password):
+def python_firsttime(ctx, password):
     """Upgrade pip and install virtualenv."""
     upgrade_pip = None
     try:
@@ -98,29 +99,35 @@ def python_init(ctx, password):
         click.echo(install_virtualenv.stdout)
         click.echo('Success.')
 
+# PROJECT specific commands
+
+# validation callbacks
+def validate_project(ctx, param, project):
+    ctx.ensure_object(dict)
+    if project not in ctx.obj:
+        raise click.BadParameter('Project "' + project + '" not loaded. Probably there is no json file present.')
+    else:
+        return project
 
 @click.command()
-@click.option('--password', prompt='account password', hide_input=True,
+@click.option('--sudo-password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
-@click.option('--db-password', prompt='database password', hide_input=True,
+@click.option('--db-password', prompt=True, hide_input=True,
                 confirmation_prompt=True, required=True)
-@click.argument('project-name')
+@click.argument('project', nargs=1, callback=validate_project, required=True)
 @click.pass_context
-def db_create(ctx, password, db_password, project_name):
+def db_create(ctx, sudo_password, db_password, project):
     """Creates a database and a user for this database."""
 
-    db_name = project_name + '-db'
-    db_username = project_name + '-user'
     create_db = None
-
     try:
-        click.echo('Creating database ' + db_name + '.')
+        click.echo('Creating database ' + project + '.')
         create_db = run(
-            ['sudo', '-u', 'postgres', '-S', 'createdb', db_name],
+            ['sudo', '-u', 'postgres', '-S', 'createdb', project],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
-            input=password,
+            input=sudo_password,
             check=True
         )
     except CalledProcessError as error:
@@ -133,13 +140,13 @@ def db_create(ctx, password, db_password, project_name):
 
     create_user = None
     try:
-        click.echo('Creating user ' + db_username)
+        click.echo('Creating user ' + project)
         create_user = run(
-            ['sudo', '-u', 'postgres', '-S', 'createuser', db_username],
+            ['sudo', '-u', 'postgres', '-S', 'createuser', '--pwpromt', db_password, project],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
-            input=password,
+            input=sudo_password,
             check=True
         )
     except CalledProcessError as error:
@@ -149,32 +156,49 @@ def db_create(ctx, password, db_password, project_name):
         # there is no output by this command
         # click.echo(create_db.stdout)
         click.echo('Success.')
+    
+    if create_db is not None and create_user is not None:
 
+        alter_role_encoding = None
+        try:
+            click.echo('ALTER ROLE on user: ' + project)
+            utf8 = "'utf8'"
+            psql = ['sudo', '-u', 'postgres', '-S', 'psql', '-tA', '--command="ALTER ROLE ' + project + ' SET client_encoding TO ' + utf8 + ';"', 'postgres']
+            alter_role_encoding = run(
+                psql,
+                stdout=PIPE,
+                stderr=STDOUT,
+                text=True,
+                input=sudo_password,
+                check=True
+            )
+        except CalledProcessError as error:
+            click.echo(error)
+            click.echo(error.stdout)
+        if alter_role_encoding is not None:
+            # there is no output by this command
+            # click.echo(create_db.stdout)
+            click.echo('Success.')
 
 
 
 @click.command()
-@click.option('--password', prompt=True, hide_input=True,
+@click.option('--sudo-password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
-@click.option('--db-password', prompt=True, hide_input=True,
-                confirmation_prompt=True, required=True)
-@click.argument('project-name')
+@click.argument('project', nargs=1, callback=validate_project, required=True)
 @click.pass_context
-def db_drop(ctx, password, db_password, project_name):
+def db_drop(ctx, sudo_password, project):
     """Drops a database and its corresponding user."""
-    
-    db_name = project_name + '-db'
-    db_username = project_name + '-user'
-    drop_db = None
 
+    drop_db = None
     try:
-        click.echo('Dropping database ' + db_name + '.')
+        click.echo('Dropping database ' + project + '.')
         drop_db = run(
-            ['sudo', '-u', 'postgres', '-S', 'dropdb', db_name],
+            ['sudo', '-u', 'postgres', '-S', 'dropdb', project],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
-            input=password,
+            input=sudo_password,
             check=True
         )
     except CalledProcessError as error:
@@ -187,13 +211,13 @@ def db_drop(ctx, password, db_password, project_name):
 
     drop_user = None
     try:
-        click.echo('Dropping user ' + db_username)
+        click.echo('Dropping user ' + project)
         drop_user = run(
-            ['sudo', '-u', 'postgres', '-S', 'dropuser', db_username],
+            ['sudo', '-u', 'postgres', '-S', 'dropuser', project],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
-            input=password,
+            input=sudo_password,
             check=True
         )
     except CalledProcessError as error:
@@ -205,28 +229,19 @@ def db_drop(ctx, password, db_password, project_name):
         click.echo('Success.')
 
 
-def validate_project(ctx, param, project):
-    ctx.ensure_object(dict)
-    if project not in ctx.obj:
-        raise click.BadParameter('Project "' + project + '" not loaded. Probably there is no json file present.')
-    else:
-        return project
 
-# TODO validate project-name user input
+
 @click.command()
 @click.option('--sudo-password', prompt=True, hide_input=True,
                 confirmation_prompt=False, required=True)
 @click.argument('project', nargs=1, callback=validate_project, required=True)
 @click.pass_context
 def systemd_create(ctx, sudo_password, project):
-    """Generates systemd socket and service files."""
-    
-
+    """Generates systemd socket and service files for the given project."""
 
     # get the configuration
     global_config = ctx.obj['CONFIG']
     project_config = ctx.obj[project]
-
 
     with open('./templates/socket_template.socket', 'r') as file:
         template_str = file.read()
@@ -235,7 +250,8 @@ def systemd_create(ctx, sudo_password, project):
             project_wagtail = project_config['wagtailProject'],
         )
         click.echo(template_filled)
-        # TODO write out to 
+        # TODO write out to /etc/systemd/system
+
     with open('./templates/service_template.service', 'r') as file:
         template_str = file.read()
         template = Template(template_str)
@@ -247,13 +263,24 @@ def systemd_create(ctx, sudo_password, project):
             project_wagtail = project_config['wagtailProject'],
         )
         click.echo(template_filled)
+        # TODO write out to /etc/systemd/system
+
+@click.command()
+@click.option('--sudo-password', prompt=True, hide_input=True,
+                confirmation_prompt=False, required=True)
+@click.argument('project', nargs=1, callback=validate_project, required=True)
+@click.pass_context
+def systemd_delete(ctx, sudo_password, project):
+    """Deletes systemd socket and service files for the given project."""
+    pass
 
 
-cli.add_command(dep_install)
-cli.add_command(python_init)
+cli.add_command(aptget_firsttime)
+cli.add_command(python_firsttime)
 cli.add_command(db_create)
 cli.add_command(db_drop)
 cli.add_command(systemd_create)
+cli.add_command(systemd_delete)
 
 if __name__ == '__main__':
     cli()
