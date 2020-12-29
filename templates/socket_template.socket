@@ -1,8 +1,8 @@
 [Unit]
-Description=gunicorn socket for project ${project_name}
+Description=gunicorn socket for project ${project_wagtail}
 
 [Socket]
-ListenStream=/run/gunicorn_${project_name}.sock
+ListenStream=/run/gunicorn_${project_wagtail}.sock
 
 [Install]
 WantedBy=sockets.target

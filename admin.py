@@ -24,11 +24,9 @@ def cli(ctx):
                     click.echo('Loading project file ' + project_file.name)
                     with open('./projects/' + project_file.name, 'r') as file:
                         project_json = json.load(file)
-                        file_name = os.path.splitext(project_file.name)[0]
-                        ctx.obj[file_name] = project_json
-                        click.echo(project_json)
+                        filename_without_extension = os.path.splitext(project_file.name)[0]
+                        ctx.obj[filename_without_extension] = project_json
                     click.echo('Success.')
-
 
 
 @click.command()
@@ -213,10 +211,18 @@ def db_drop(ctx, password, db_password, project_name):
                 confirmation_prompt=False, required=True)
 @click.argument('project', nargs=1)
 @click.pass_context
-def gen_systemd(ctx, sudo_password, project):
+def systemd_create(ctx, sudo_password, project):
     """Generates systemd socket and service files."""
-    config = ctx.obj['CONFIG']
+    
 
+    raise click.ClickException("Something went wrong.")
+    raise click.Abort()
+
+    # get the configuration
+    global_config = ctx.obj['CONFIG']
+    project_config = ctx.obj[project]
+
+    
 
 
     with open('./templates/socket_template.socket', 'r') as file:
@@ -244,7 +250,7 @@ cli.add_command(dep_install)
 cli.add_command(python_init)
 cli.add_command(db_create)
 cli.add_command(db_drop)
-cli.add_command(gen_systemd)
+cli.add_command(systemd_create)
 
 if __name__ == '__main__':
     cli()

@@ -1,17 +1,17 @@
 [Unit]
-Description=gunicorn daemon for project ${project_name}
-Requires=gunicorn_${project_name}.socket
+Description=gunicorn daemon for project ${project_wagtail}
+Requires=gunicorn_${project_wagtail}.socket
 After=network.target
 
 [Service]
 User=${user}
 Group=www-data
-WorkingDirectory=${projects_home}/${project_name}/${site_name}
-ExecStart=${projects_home}/${project_name}/${virtual_environment}/bin/gunicorn \
+WorkingDirectory=${projects_root}/${project_meta}/${project_wagtail}
+ExecStart=${projects_root}/${project_meta}/${virtual_environment}/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
-          --bind unix:/run/gunicorn_${project_name}.sock \
-          ${project_name}.wsgi:application
+          --bind unix:/run/gunicorn_${project_meta}.sock \
+          ${project_wagtail}.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
