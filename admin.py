@@ -142,7 +142,7 @@ def db_create(ctx, sudo_password, db_password, project):
     try:
         click.echo('Creating user ' + project)
         create_user = run(
-            ['sudo', '-u', 'postgres', '-S', 'createuser', '--pwprompt', db_password, project],
+            ['sudo', '-u', 'postgres', '-S', 'createuser', project],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
