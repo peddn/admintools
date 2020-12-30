@@ -1,5 +1,6 @@
 import sys
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 db_name = sys.argv[1]
 db_username = sys.argv[2]
@@ -7,8 +8,11 @@ db_password = sys.argv[3]
 
 print('Executing db_setup script.')
 
-conn = psycopg2.connect('dbname=postgres')
-cur = conn.cursor()
+con = psycopg2.connect('dbname=postgres')
+
+con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+
+cur = con.cursor()
 
 cur.execute('CREATE DATABASE ' + db_name + ';')
 cur.execute('CREATE USER ' + db_username + " WITH PASSWORD '" + db_password + "';")
@@ -22,6 +26,6 @@ for row in cur.fetchall():
     print('SELECT' + str(row))
 
 cur.close()
-conn.close()
+con.close()
 
 print('Done.')
