@@ -1,6 +1,7 @@
 import sys
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2.errors import DuplicateDatabase
 
 db_name = sys.argv[1]
 db_username = sys.argv[2]
@@ -14,7 +15,10 @@ con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 cur = con.cursor()
 
-cur.execute('CREATE DATABASE ' + db_name + ';')
+try:
+    cur.execute('CREATE DATABASE ' + db_name + ';')
+except DuplicateDatabase as error:
+    print(error)
 cur.execute('CREATE USER ' + db_username + " WITH PASSWORD '" + db_password + "';")
 cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
 cur.execute('ALTER ROLE ' + db_username + ' SET default_transaction_isolation TO ' + "'read committed'" + ';')
