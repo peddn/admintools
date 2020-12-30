@@ -10,10 +10,6 @@ cur = conn.cursor()
 
 cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
 
-for row in cur.fetchall():
-    print('ALTER ROLE: ' + row)
-
-
 cur.execute('SELECT * FROM pg_catalog.pg_roles')
 for row in cur.fetchall():
     print('SELECT' + row)
