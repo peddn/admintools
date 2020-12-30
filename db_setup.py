@@ -1,7 +1,7 @@
 import sys
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2.errors import DuplicateDatabase
+from psycopg2.errors import DuplicateDatabase, DuplicateObject
 
 db_name = sys.argv[1]
 db_username = sys.argv[2]
@@ -17,13 +17,16 @@ cur = con.cursor()
 
 try:
     cur.execute('CREATE DATABASE ' + db_name + ';')
+    cur.execute('CREATE USER ' + db_username + " WITH PASSWORD '" + db_password + "';")
 except DuplicateDatabase as error:
     print(error)
-cur.execute('CREATE USER ' + db_username + " WITH PASSWORD '" + db_password + "';")
-cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
-cur.execute('ALTER ROLE ' + db_username + ' SET default_transaction_isolation TO ' + "'read committed'" + ';')
-cur.execute('ALTER ROLE ' + db_username + ' SET timezone TO ' + "'UTC'" + ';')
-cur.execute('GRANT ALL PRIVILEGES ON DATABASE ' + db_name + ' TO ' + db_username + ';')
+except DuplicateObject as error:
+    print(error)
+else:
+    cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
+    cur.execute('ALTER ROLE ' + db_username + ' SET default_transaction_isolation TO ' + "'read committed'" + ';')
+    cur.execute('ALTER ROLE ' + db_username + ' SET timezone TO ' + "'UTC'" + ';')
+    cur.execute('GRANT ALL PRIVILEGES ON DATABASE ' + db_name + ' TO ' + db_username + ';')
 
 cur.execute('SELECT * FROM pg_catalog.pg_roles')
 for row in cur.fetchall():
