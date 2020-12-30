@@ -8,9 +8,15 @@ conn = psycopg2.connect('dbname=postgres')
 
 cur = conn.cursor()
 
-result  = cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
+cur.execute('ALTER ROLE ' + db_username + ' SET client_encoding TO ' + "'utf8'" + ';')
 
-print('RESULT: ' + str(result))
+for row in cur.fetchall():
+    print('ALTER ROLE: ' + row)
+
+
+cur.execute('SELECT * FROM pg_catalog.pg_roles')
+for row in cur.fetchall():
+    print('SELECT' + row)
 
 cur.close()
 conn.close()
