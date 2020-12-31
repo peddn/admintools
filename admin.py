@@ -121,64 +121,25 @@ def validate_project(ctx, param, project):
 @click.pass_context
 def db_create(ctx, sudo_password, db_password, project):
     """Creates a database and a user for this database."""
-
-    create_db = None
-    try:
-        click.echo('Creating database ' + project + '.')
-        create_db = run(
-            ['sudo', '-u', 'postgres', '-S', 'createdb', project],
-            stdout=PIPE,
-            stderr=STDOUT,
-            text=True,
-            input=sudo_password,
-            check=True
-        )
-    except CalledProcessError as error:
-        click.echo(error)
-        click.echo(error.stdout)
-    if create_db is not None:
-        # there is no output by this command
-        # click.echo(create_db.stdout)
-        click.echo('Success.')
-
-    create_user = None
-    try:
-        click.echo('Creating user ' + project)
-        create_user = run(
-            ['sudo', '-u', 'postgres', '-S', 'createuser', project],
-            stdout=PIPE,
-            stderr=STDOUT,
-            text=True,
-            input=sudo_password,
-            check=True
-        )
-    except CalledProcessError as error:
-        click.echo(error)
-        click.echo(error.stdout)
-    if create_user is not None:
-        # there is no output by this command
-        # click.echo(create_db.stdout)
-        click.echo('Success.')
     
-    if create_db is not None and create_user is not None:
-        postgres = None
-        try:
-            click.echo('Executing postgres script')
-            postgres = run(
-                ['sudo', '-u', 'postgres', '-S', 'python3', 'db_setup.py'],
-                stdout=PIPE,
-                stderr=STDOUT,
-                text=True,
-                input=sudo_password,
-                check=True
-            )
-        except CalledProcessError as error:
-            click.echo(error)
-            click.echo(error.stdout)
-        if postgres is not None:
-            # there is no output by this command
-            click.echo('stdout: ' + str(postgres.stdout))
-            click.echo('Success.')
+    postgres = None
+    try:
+        click.echo('Running db_create script.')
+        postgres = run(
+            ['sudo', '-u', 'postgres', '-S', 'python3', './scripts/db_create.py', project, db_password],
+            stdout=PIPE,
+            stderr=STDOUT,
+            text=True,
+            input=sudo_password,
+            check=True
+        )
+    except CalledProcessError as error:
+        click.echo(error)
+        click.echo(error.stdout)
+    if postgres is not None:
+        # there is no output by this command
+        click.echo('stdout: ' + str(postgres.stdout))
+        click.echo('Success.')
     
 
 
@@ -189,12 +150,11 @@ def db_create(ctx, sudo_password, db_password, project):
 @click.pass_context
 def db_drop(ctx, sudo_password, project):
     """Drops a database and its corresponding user."""
-
-    drop_db = None
+    postgres = None
     try:
-        click.echo('Dropping database ' + project + '.')
-        drop_db = run(
-            ['sudo', '-u', 'postgres', '-S', 'dropdb', project],
+        click.echo('Running db_drop script.')
+        postgres = run(
+            ['sudo', '-u', 'postgres', '-S', 'python3', './scripts/db_drop.py', project],
             stdout=PIPE,
             stderr=STDOUT,
             text=True,
@@ -204,30 +164,10 @@ def db_drop(ctx, sudo_password, project):
     except CalledProcessError as error:
         click.echo(error)
         click.echo(error.stdout)
-    if drop_db is not None:
+    if postgres is not None:
         # there is no output by this command
-        # click.echo(drop_db.stdout)
+        click.echo('stdout: ' + str(postgres.stdout))
         click.echo('Success.')
-
-    drop_user = None
-    try:
-        click.echo('Dropping user ' + project)
-        drop_user = run(
-            ['sudo', '-u', 'postgres', '-S', 'dropuser', project],
-            stdout=PIPE,
-            stderr=STDOUT,
-            text=True,
-            input=sudo_password,
-            check=True
-        )
-    except CalledProcessError as error:
-        click.echo(error)
-        click.echo(error.stdout)
-    if drop_user is not None:
-        # there is no output by this command
-        # click.echo(create_db.stdout)
-        click.echo('Success.')
-
 
 
 
