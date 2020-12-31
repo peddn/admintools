@@ -21,7 +21,7 @@ try:
     print('\t[INFO] Creating database "' + project + '"')
     cur.execute('CREATE DATABASE ' + project + ';')
 except DuplicateDatabase as error:
-    print('\t[ERROR] ' + str(error))
+    print('\t[ERROR] ' + str(error).strip())
 else:
     print('\t[INFO] Done.')
 
@@ -30,7 +30,7 @@ try:
     print('\t[INFO] Creating user "' + project + '"')
     cur.execute('CREATE USER ' + project + " WITH PASSWORD '" + db_password + "';")
 except DuplicateObject as error:
-    print('\t[ERROR] ' + str(error))
+    print('\t[ERROR] ' + str(error).strip())
 else:
     print('\t[INFO] Done.')
     print('\t[INFO] Setting up user "' + project + '"')
@@ -42,8 +42,7 @@ else:
 
 cur.execute('SELECT * FROM pg_catalog.pg_roles')
 for row in cur.fetchall():
-    print(str(row))
-    if str(row).startswith(project):
+    if row[0] == project:
         print('\t[INFO] ' + str(row))
 
 cur.close()
