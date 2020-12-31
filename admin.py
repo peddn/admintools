@@ -138,7 +138,7 @@ def db_create(ctx, sudo_password, db_password, project):
         click.echo('[ERROR] ' + error.stdout)
     if postgres is not None:
         # there is no output by this command
-        click.echo('[STDOUT] ' + str(postgres.stdout))
+        click.echo(str(postgres.stdout))
         click.echo('[INFO] Done')
     
 
@@ -166,7 +166,7 @@ def db_drop(ctx, sudo_password, project):
         click.echo('[ERROR] ' + error.stdout)
     if postgres is not None:
         # there is no output by this command
-        click.echo('[STDOUT] ' + str(postgres.stdout))
+        click.echo(str(postgres.stdout))
         click.echo('[INFO] Done')
 
 
