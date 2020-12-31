@@ -23,7 +23,7 @@ try:
 except DuplicateDatabase as error:
     print('\t[ERROR] ' + str(error).strip())
 else:
-    print('\t[INFO] Done.')
+    print('\t[INFO] Done')
 
 # try to create and setup the user
 try:
@@ -32,13 +32,13 @@ try:
 except DuplicateObject as error:
     print('\t[ERROR] ' + str(error).strip())
 else:
-    print('\t[INFO] Done.')
+    print('\t[INFO] Done')
     print('\t[INFO] Setting up user "' + project + '"')
     cur.execute('ALTER ROLE ' + project + ' SET client_encoding TO ' + "'utf8'" + ';')
     cur.execute('ALTER ROLE ' + project + ' SET default_transaction_isolation TO ' + "'read committed'" + ';')
     cur.execute('ALTER ROLE ' + project + ' SET timezone TO ' + "'UTC'" + ';')
     cur.execute('GRANT ALL PRIVILEGES ON DATABASE ' + project + ' TO ' + project + ';')
-    print('\t[INFO] Done.')
+    print('\t[INFO] Done')
 
 cur.execute('SELECT * FROM pg_catalog.pg_roles')
 for row in cur.fetchall():
@@ -48,4 +48,4 @@ for row in cur.fetchall():
 cur.close()
 con.close()
 
-print('[INFO] Done.')
+print('[INFO] Done')

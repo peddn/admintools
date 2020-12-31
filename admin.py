@@ -13,23 +13,23 @@ def cli(ctx):
     ctx.ensure_object(dict)
 
     # load the global configuration data and add it to the context
-    click.echo('Loading config file.')
+    click.echo('[INFO] Loading config file')
     with open('config.json', 'r') as c_file:
         config_json = json.load(c_file)
         ctx.obj['CONFIG'] = config_json
-    click.echo('Success.')
+    click.echo('[INFO] Done')
 
     # load all project meta data and add them to the context
     with os.scandir('./projects') as projects_dir:
         for project_file in projects_dir:
             if project_file.is_file():
                 if project_file.name.endswith('.json') and not project_file.name.startswith('.'):
-                    click.echo('Loading project file ' + project_file.name)
+                    click.echo('[INFO] Loading project file ' + project_file.name)
                     with open('./projects/' + project_file.name, 'r') as file:
                         project_json = json.load(file)
                         filename_without_extension = os.path.splitext(project_file.name)[0]
                         ctx.obj[filename_without_extension] = project_json
-                    click.echo('Success.')
+                    click.echo('[INFO] Done')
 
 # GLOBAL commands
 
@@ -41,7 +41,7 @@ def aptget_firsttime(ctx, password):
     """Installs basic dependencies."""
     aptget_install = None
     try:
-        click.echo('Installing basic dependencies.')
+        click.echo('[INFO] Installing basic dependencies')
         aptget_install = run(
             [ 'xargs', '-a', './packages/basic.txt',
             'sudo', '-S', 'apt-get', 'install', '-y' ],
@@ -56,7 +56,7 @@ def aptget_firsttime(ctx, password):
         click.echo(error.stdout)
     if aptget_install is not None:
         click.echo(aptget_install.stdout)
-        click.echo('Success.')
+        click.echo('[INFO] Done')
 
 
 @click.command()
@@ -67,7 +67,7 @@ def python_firsttime(ctx, password):
     """Upgrade pip and install virtualenv."""
     upgrade_pip = None
     try:
-        click.echo('Upgrading pip.')
+        click.echo('[INFO] Upgrading pip')
         upgrade_pip = run(
             [ 'sudo', '-S', 'python3', '-m',
             'pip', 'install', '--upgrade', 'pip' ],
@@ -82,11 +82,11 @@ def python_firsttime(ctx, password):
         click.echo(error.stdout)
     if upgrade_pip is not None:
         click.echo(upgrade_pip.stdout)
-        click.echo('Success.')
+        click.echo('[INFO] Done')
     
     install_virtualenv = None
     try:
-        click.echo('Installing virtualenv')
+        click.echo('[INFO] Installing virtualenv')
         install_virtualenv = run(
             ['sudo', '-S', 'pip', 'install', 'virtualenv'],
             stdout=PIPE,
@@ -100,7 +100,7 @@ def python_firsttime(ctx, password):
         click.echo(error.stdout)
     if install_virtualenv is not None:
         click.echo(install_virtualenv.stdout)
-        click.echo('Success.')
+        click.echo('[INOF] Done')
 
 # PROJECT specific commands
 
@@ -124,7 +124,7 @@ def db_create(ctx, sudo_password, db_password, project):
     
     postgres = None
     try:
-        click.echo('Running db_create script.')
+        click.echo('[INFO] Running db_create script')
         postgres = run(
             ['sudo', '-u', 'postgres', '-S', 'python3', './scripts/db_create.py', project, db_password],
             stdout=PIPE,
@@ -134,12 +134,12 @@ def db_create(ctx, sudo_password, db_password, project):
             check=True
         )
     except CalledProcessError as error:
-        click.echo(error)
-        click.echo(error.stdout)
+        click.echo('[ERROR]' + str(error))
+        click.echo('[ERROR] ' + error.stdout)
     if postgres is not None:
         # there is no output by this command
-        click.echo('stdout: ' + str(postgres.stdout))
-        click.echo('Success.')
+        click.echo('[STDOUT] ' + str(postgres.stdout))
+        click.echo('[INFO] Done')
     
 
 
@@ -152,7 +152,7 @@ def db_drop(ctx, sudo_password, project):
     """Drops a database and its corresponding user."""
     postgres = None
     try:
-        click.echo('Running db_drop script.')
+        click.echo('[INFO] Running db_drop script')
         postgres = run(
             ['sudo', '-u', 'postgres', '-S', 'python3', './scripts/db_drop.py', project],
             stdout=PIPE,
@@ -162,12 +162,12 @@ def db_drop(ctx, sudo_password, project):
             check=True
         )
     except CalledProcessError as error:
-        click.echo(error)
-        click.echo(error.stdout)
+        click.echo('[ERROR] ' + str(error))
+        click.echo('[ERROR] ' + error.stdout)
     if postgres is not None:
         # there is no output by this command
-        click.echo('stdout: ' + str(postgres.stdout))
-        click.echo('Success.')
+        click.echo('[STDOUT] ' + str(postgres.stdout))
+        click.echo('[INFO] Done')
 
 
 
