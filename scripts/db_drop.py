@@ -22,7 +22,7 @@ try:
 except InvalidCatalogName as error:
     print('\t[ERROR] ' + str(error).strip())
 else:
-    print('[INFO] Done.')
+    print('\t[INFO] Done.')
 
 try:
     print('\t[INFO] Dropping user "' + project + '"')
@@ -30,7 +30,7 @@ try:
 except UndefinedObject as error:
     print('\t[ERROR] ' + str(error).strip())
 else:
-    print('[INFO] Done.')
+    print('\t[INFO] Done.')
 
 cur.close()
 con.close()
