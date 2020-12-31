@@ -11,9 +11,9 @@ This software is designed to live in the system's global python environment.
 
 ```console
 foo@bar:~$ sudo apt-get update
-~$ sudo apt-get install build-essential
-~$ git clone https://github.com/peddn/admintools.git
-~$ cd admintools
-~$ sudo pip install -r requirements.txt
-~$ python3 admin.py --help
+foo@bar:~$ sudo apt-get install build-essential
+foo@bar:~$ git clone https://github.com/peddn/admintools.git
+foo@bar:~$ cd admintools
+foo@bar:~$ sudo pip install -r requirements.txt
+foo@bar:~$ python3 admin.py --help
 ```
