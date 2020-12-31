@@ -19,12 +19,12 @@ cur = con.cursor()
 try:
     cur.execute('DROP DATABASE ' + project + ';')
 except InvalidCatalogName as error:
-    print('\t[ERROR] ' + str(error))
+    print('\t[ERROR] ' + str(error).strip())
 
 try:
     cur.execute('DROP USER ' + project + ';')
 except UndefinedObject as error:
-    print('\t[ERROR] ' + str(error))
+    print('\t[ERROR] ' + str(error).strip())
 
 cur.close()
 con.close()
