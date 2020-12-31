@@ -1,7 +1,7 @@
 import sys
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2.errors import DuplicateDatabase, DuplicateObject
+from psycopg2.errors import InvalidCatalogName
 
 project = sys.argv[1]
 
@@ -16,8 +16,10 @@ con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 cur = con.cursor()
 
-
-cur.execute('DROP DATABASE ' + project + ';')
+try:
+    cur.execute('DROP DATABASE ' + project + ';')
+except InvalidCatalogName as error:
+    print('ERROR: ' + error)
 
 cur.execute('DROP USER ' + project + ';')
 
