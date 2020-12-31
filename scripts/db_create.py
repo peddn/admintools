@@ -30,7 +30,7 @@ try:
     print('\t[INFO] Creating user "' + project + '"')
     cur.execute('CREATE USER ' + project + " WITH PASSWORD '" + db_password + "';")
 except DuplicateObject as error:
-    print('\t[ERROR] ' + error)
+    print('\t[ERROR] ' + str(error))
 else:
     print('\t[INFO] Done.')
     print('\t[INFO] Setting up user "' + project + '"')
@@ -42,6 +42,7 @@ else:
 
 cur.execute('SELECT * FROM pg_catalog.pg_roles')
 for row in cur.fetchall():
+    print(str(row))
     if str(row).startswith(project):
         print('\t[INFO] ' + str(row))
 
