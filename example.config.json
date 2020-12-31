@@ -1,0 +1,5 @@
+{
+    "user": "foo",
+    "projectsRoot": "/home/foo/projects",
+    "virtualEnvironment": "venv"
+}

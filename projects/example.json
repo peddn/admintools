@@ -1,0 +1,8 @@
+{
+    "wagtailProject": "example",
+    "serverNames": [
+        "www.example.com",
+        "example.com"
+    ],
+    "repository": ""
+}
