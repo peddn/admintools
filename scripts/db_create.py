@@ -20,12 +20,12 @@ cur = con.cursor()
 try:
     cur.execute('CREATE DATABASE ' + project + ';')
 except DuplicateDatabase as error:
-    print(error)
+    print('ERROR: ' + error)
 
 try:
     cur.execute('CREATE USER ' + project + " WITH PASSWORD '" + db_password + "';")
 except DuplicateObject as error:
-    print(error)
+    print('ERROR: ' + error)
 else:
     cur.execute('ALTER ROLE ' + project + ' SET client_encoding TO ' + "'utf8'" + ';')
     cur.execute('ALTER ROLE ' + project + ' SET default_transaction_isolation TO ' + "'read committed'" + ';')

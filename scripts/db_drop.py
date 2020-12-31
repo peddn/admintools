@@ -4,7 +4,6 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2.errors import DuplicateDatabase, DuplicateObject
 
 project = sys.argv[1]
-db_password = sys.argv[2]
 
 print('Executing db_setup script.')
 
