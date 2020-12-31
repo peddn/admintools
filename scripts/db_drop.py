@@ -19,7 +19,9 @@ cur = con.cursor()
 try:
     cur.execute('DROP DATABASE ' + project + ';')
 except InvalidCatalogName as error:
-    print('ERROR: ' + error)
+    for item in dir(error):
+        print(str(item))
+    print('ERROR: ' + error.message)
 
 cur.execute('DROP USER ' + project + ';')
 
