@@ -1,7 +1,7 @@
 import sys
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2.errors import InvalidCatalogName
+from psycopg2.errors import InvalidCatalogName, UndefinedObject
 
 project = sys.argv[1]
 
@@ -21,8 +21,10 @@ try:
 except InvalidCatalogName as error:
     print('ERROR: ' + str(error))
 
-cur.execute('DROP USER ' + project + ';')
-
+try:
+    cur.execute('DROP USER ' + project + ';')
+except UndefinedObject as error:
+    print('ERROR: ' + str(error))
 
 cur.close()
 con.close()
