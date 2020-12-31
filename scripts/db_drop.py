@@ -5,7 +5,7 @@ from psycopg2.errors import InvalidCatalogName, UndefinedObject
 
 project = sys.argv[1]
 
-print('Executing db_setup script.')
+print('[INFO] Executing db_drop script.')
 
 # this script assumes that it runs as postgres unix user
 # connect to the 'postgres' standard database
@@ -19,14 +19,14 @@ cur = con.cursor()
 try:
     cur.execute('DROP DATABASE ' + project + ';')
 except InvalidCatalogName as error:
-    print('ERROR: ' + str(error))
+    print('\t[ERROR] ' + str(error))
 
 try:
     cur.execute('DROP USER ' + project + ';')
 except UndefinedObject as error:
-    print('ERROR: ' + str(error))
+    print('\t[ERROR] ' + str(error))
 
 cur.close()
 con.close()
 
-print('Done.')
+print('[INFO] Done.')
